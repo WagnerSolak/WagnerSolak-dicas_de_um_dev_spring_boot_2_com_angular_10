@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.solak.bookstore.domain.Categoria;
+import com.solak.bookstore.dtos.CategoriaDTO;
 import com.solak.bookstore.repositories.CategoriaRepository;
 import com.solak.bookstore.service.exceptions.ObjectNotFoundException;
 
@@ -29,6 +30,13 @@ public class CategoriaService {
 	
 	public Categoria create(Categoria obj) {
 		obj.setId(null); // se o id ja existir na base ele somente atualiza
+		return repository.save(obj);
+	}
+
+	public Categoria update(Integer id, CategoriaDTO objDTO) {
+		Categoria obj = findById(id); //testa se tem o obj, o id
+		obj.setNome(objDTO.getNome());
+		obj.setDescricao(objDTO.getDescricao());
 		return repository.save(obj);
 	}
 
