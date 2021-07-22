@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.solak.bookstore.domain.Categoria;
 import com.solak.bookstore.dtos.CategoriaDTO;
 import com.solak.bookstore.repositories.CategoriaRepository;
+import com.solak.bookstore.service.exceptions.DataIntegrityViolationException;
 import com.solak.bookstore.service.exceptions.ObjectNotFoundException;
 
 @Service
@@ -23,18 +24,18 @@ public class CategoriaService {
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName()));
 	}
-	
-	public List<Categoria> findAll(){
+
+	public List<Categoria> findAll() {
 		return repository.findAll();
 	}
-	
+
 	public Categoria create(Categoria obj) {
 		obj.setId(null); // se o id ja existir na base ele somente atualiza
 		return repository.save(obj);
 	}
 
 	public Categoria update(Integer id, CategoriaDTO objDTO) {
-		Categoria obj = findById(id); //testa se tem o obj, o id
+		Categoria obj = findById(id); // testa se tem o obj, o id
 		obj.setNome(objDTO.getNome());
 		obj.setDescricao(objDTO.getDescricao());
 		return repository.save(obj);
@@ -42,8 +43,15 @@ public class CategoriaService {
 
 	public void delete(Integer id) {
 		findById(id);
-		// se ele encontrar o id ee executa abaixo:
-		repository.deleteById(id);
+		// se ele encontrar o id ele executa abaixo:
+		// repository.deleteById(id);
+		// como ele lançou a excessao DataIntegratyViolationException ao tentar excluir
+		// uma catagoria que tem livro associado colocamos o delete dentro do try/catch
+		try {
+			repository.deleteById(id);
+		} catch (org.springframework.dao.DataIntegrityViolationException e) {
+			throw new DataIntegrityViolationException("Objeto não pode ser deletado, porque possui livros associados!");
+		}
 
 	}
 
