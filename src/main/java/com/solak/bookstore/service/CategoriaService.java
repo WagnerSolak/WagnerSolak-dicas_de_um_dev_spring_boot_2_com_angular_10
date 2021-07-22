@@ -40,4 +40,11 @@ public class CategoriaService {
 		return repository.save(obj);
 	}
 
+	public void delete(Integer id) {
+		findById(id);
+		// se ele encontrar o id ee executa abaixo:
+		repository.deleteById(id);
+
+	}
+
 }
