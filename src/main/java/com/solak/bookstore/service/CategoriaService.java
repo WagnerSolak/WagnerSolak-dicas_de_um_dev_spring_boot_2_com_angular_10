@@ -26,5 +26,10 @@ public class CategoriaService {
 	public List<Categoria> findAll(){
 		return repository.findAll();
 	}
+	
+	public Categoria create(Categoria obj) {
+		obj.setId(null); // se o id ja existir na base ele somente atualiza
+		return repository.save(obj);
+	}
 
 }
